@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" >
+    
+<head>
+        <meta charset="utf-8">
+        <title>Interactive Pie Chart</title>
+        <link rel="stylesheet" href="flatui/css/bootstrap.css" media="screen">
+        <link rel="stylesheet" href="flatui/css/flat-ui.css" media="screen">
+        
+        <link rel="stylesheet" href="css/style.css" media="screen">
+        <script src="flatui/js/jquery-1.8.2.min.js"></script>
+        <script src="flatui/js/bootstrap-tooltip.js"></script>
+        <script src="js/raphael.js"></script>
+        
+        <script type="text/javascript">
+            var total;
+            var numberOfLocks = 0 ; 
+            var numberOfRemoved = 0;
+            // for managing the categories that we do not want to consider
+            function setConsider(value){
+                // which DOM object to change
+                var tag = '#check'+value;
+                var itag = tag+' i';
+                if(  jData[value].removed === false){
+                    jData[value].removed = true;
+                    $(tag).removeClass('btn-success');    
+                    $(tag).addClass('btn-danger');    
+                    $(itag).removeClass('fui-checkmark-24');
+                    $(itag).addClass('fui-cross-24'); 
+                    numberOfRemoved++;
+                    reDistribute(value);
+                    animate();
+                } else{
+                    jData[value].removed = false;
+                    $(tag).removeClass('btn-danger');  
+                    $(tag).addClass('btn-success');
+                    $(itag).removeClass('fui-cross-24');  
+                    $(itag).addClass('fui-checkmark-24');
+                    numberOfRemoved--;
+                    getDistribute(value);
+                    animate();
+                }
+            }
+            
+            // for locking a specific value
+            function setLock(value){
+                // which DOM object to change
+                var tag = '#lock'+value;
+                if(  jData[value].lock === false){
+                    jData[value].lock = true;
+                    $(tag).removeClass('disabled');    
+                    numberOfLocks++;
+                } else{
+                    jData[value].lock = false;
+                    numberOfLocks--;
+                    $(tag).addClass('disabled');  
+                }
+            }
+
+            // Actual data for use
+            var jData = [ { "category" : "A",  "data" : 10 , "color" : '#1ABC9C' ,"lock": false , "removed" : false} ,
+                          { "category" : "B",  "data" : 10 , "color" : '#3498DB' , "lock": false , "removed" : false} ,
+                          { "category" : "C",  "data" : 10 , "color" : '#9B59B6', "lock": false , "removed" : false} ,
+                          { "category" : "D",  "data" : 10 , "color" : '#f1c40f', "lock": false , "removed" : false},
+                          { "category" : "E",  "data" : 10 , "color" : '#E74C3C', "lock": false , "removed" : false},
+                          { "category" : "F",  "data" : 10 , "color" : '#2ECC71', "lock": false , "removed" : false},
+                          { "category" : "G",  "data" : 10 , "color" : '#F39C12', "lock": false , "removed" : false},
+                          { "category" : "H",  "data" : 10 , "color" : '#34495e', "lock": false , "removed" : false}];
+
+
+            function refresh(){
+                jData = [ { "category" : "A",  "data" : 10 , "color" : '#1ABC9C' ,"lock": false , "removed" : false} ,
+                          { "category" : "B",  "data" : 10 , "color" : '#3498DB' , "lock": false , "removed" : false} ,
+                          { "category" : "C",  "data" : 10 , "color" : '#9B59B6', "lock": false , "removed" : false} ,
+                          { "category" : "D",  "data" : 10 , "color" : '#f1c40f', "lock": false , "removed" : false},
+                          { "category" : "E",  "data" : 10 , "color" : '#E74C3C', "lock": false , "removed" : false},
+                          { "category" : "F",  "data" : 10 , "color" : '#2ECC71', "lock": false , "removed" : false},
+                          { "category" : "G",  "data" : 10 , "color" : '#F39C12', "lock": false , "removed" : false},
+                          { "category" : "H",  "data" : 10 , "color" : '#34495e', "lock": false , "removed" : false}];
+
+                 numberOfLocks = 0;
+                 animate();
+            }
+
+            // this function has some issues
+            function getDistribute(index){
+                var value = 3;
+                if( numberOfLocks >= 7 )
+                    return;
+                //if one is zero there must be one that has more than 2 so we are
+                // finding that specific one and decrease its value! 
+                // but if those are locked then we have to find a better distributions
+                var j = 0 ; 
+                var length = jData.length;
+                while( value > 0 && numberOfLocks <8 && j < 17){
+                    if( jData[j % length ].data > 2 && jData[j % length].lock === false && j != index && jData[j].removed == false){
+                        value--;
+                        jData[j % length].data--;
+                    }
+                    j++;
+                }
+
+                jData[index].data = 3 - value;
+                showData();
+            }
+            // this function also has some issues
+            function reDistribute( index){
+                var value = jData[index].data;
+
+                //number of available pies for distribution
+                var numOfAvailable = 0; 
+                for( var i = 0 ; i < jData.length ; i++)
+                    if( jData[i].lock === false && jData[i].removed === false && i != index)
+                        numOfAvailable++;
+                console.log(numOfAvailable);
+
+                if( numOfAvailable == 0 )
+                    return;
+
+                var nValue = value / numOfAvailable;
+                nValue = Math.floor(nValue);
+
+                var rValue = value % (numOfAvailable);
+                
+                // adding divided value ot no-locks and no-removed
+                var i  = 0;
+                while( i < jData.length && nValue > 0 ){
+                    if(jData[i].lock === false && i != index && jData[i].removed === false)
+                        jData[i].data+= nValue;
+                    i++;
+                }
+
+                // 
+                var j = 0 ; 
+                console.log(rValue);
+                while( rValue > 0 && numberOfLocks <8){
+                    if( i != index && jData[j].lock === false && j != index && jData[j].removed == false){
+                        jData[j].data += 1;
+                        rValue--;
+                    }
+                    j = (j+1) % jData.length;
+                }
+                jData[index].data = 0 ; 
+                showData();
+                console.log("value: " + value + "  nValue: " +nValue + " rValue:" + rValue + " numberoflocks: " + numberOfLocks);
+            }
+
+            function showData(){
+                var res = []; 
+                for( var i = 0 ; i < jData.length ; i++)
+                    res += ' ' + jData[i].data;
+                console.log(res);
+            }
+            function infoUpdate(i){
+                $('#infotext').text(jData[i].category);
+                $('#infovalue').text(Math.round(( jData[i].data / total) * 100) + '%');
+                $('#infobox').css("color",jData[i].color);   
+
+                        
+            }
+            function initialize() {
+
+                 var r = Raphael("holder");
+
+                // pie colors            
+                r.customAttributes.segment = function (x, y, r, a1, a2,i) {
+                    var flag = (a2 - a1) > 180,
+                        clr = (a2 - a1) / 360;
+                    a1 = (a1 % 360) * Math.PI / 180;
+                    a2 = (a2 % 360) * Math.PI / 180;
+                   
+                    return {
+                        path: [["M", x, y], ["l", r * Math.cos(a1), r * Math.sin(a1)], ["A", r, r, 0, +flag, 1, x + r * Math.cos(a2), y + r * Math.sin(a2)], ["z"]],
+                        //fill: "hsb(" + (i+1)*4/36 + ", .75, .8)"
+                        fill: jData[i].color  
+                    };
+                };
+
+                animate = function animate(ms) {
+                    var start = 0,
+                        val;
+                    for (i = 0; i < ii; i++) {
+                        val = 360 / total * jData[i].data;
+                        paths[i].animate({segment: [375, 350, 250, start, start += val, i]}, ms || 1500, "bounce");
+                        paths[i].angle = start - val / 2;
+                        $('#pie'+i).html(Math.round(( jData[i].data / total) * 100) + '%');
+                    }
+                }
+                
+
+                $('#stats').empty();
+                $('#stats').html(
+                    statsInfo()
+                );
+
+                // this function needs to be implemented correctly
+                function statsInfo(){
+                    var html = ''; 
+                    for(var i = 0 ; i< jData.length ; i++){
+
+                        html +=   '<li class="row-fluid"><a href="#" id="check'+i+'" class="btn btn-success" onclick="setConsider('+i+')" ><i class="fui-checkmark-24"></i></a>';
+                        html += ' <a href="#" id="lock'+i+'" class="btn disabled" onclick="setLock('+i+')"><i class="fui-lock-24"></i></a>';
+                        html +='<span class="numb" style="color:'+jData[i].color +';" id="pie'+i+'"></span>'+
+                            '<span id ="info" style="color:'+jData[i].color +';font-weight:bold;font-size:15px;">'
+                            + jData[i].category + '</span></li><br>';
+
+                    }
+                    return html;
+                }
+                var paths = r.set(),
+                    start,
+                    bg = r.circle(600, 600, 0).attr({stroke: "#fff", "stroke-width": 6});
+                //data = data.sort(function (a, b) { return b - a;});
+                
+                jData = jData.sort(function (a, b) { return b.data - a.data;});
+                total = 0;
+                for (var i = 0, ii = jData.length; i < ii; i++) {
+                    total += jData[i].data;
+                }
+                
+                console.log(jData.length);
+                start = 0;
+                for (i = 0; i < ii; i++) {
+                    var val = 360 / total * jData[i].data;
+                    (function (i, val) {
+                        paths.push(r.path().attr({segment: [200, 200, 250, start, start + val, i], stroke: "#fff"}).click(function () {
+                                if( jData[i].lock === false ) {
+                                    jData[i].data += 7;
+                                    for(var j = 0 ; j < jData.length; j++){
+                                        if( j != i )
+                                            if( jData[j].data > 1 && !jData[j].lock)
+                                                jData[j].data--;
+                                            else
+                                                jData[i].data--;
+                                    }
+                                    infoUpdate(i);
+                                    animate();
+                                }
+                                }).mouseover(function () {
+                                    infoUpdate(i);    
+                                })            
+                            );
+                    })(i, val);
+                    start += val;
+                  ;
+                }
+                bg.animate({r: 30}, 1000, "bounce");
+                animate(1000);
+                // for runnign the tooltip
+                $('#infotext').text(jData[0].category);
+                $('#infovalue').text(Math.round(( jData[0].data / total) * 100) + '%');
+                $('#infobox').css("color",jData[0].color);
+                $('a').tooltip();
+                // just a header with textual information
+                //var t = r.text(200, 20, "Click on segments to make them bigger.").attr({font: '100 20px "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif', fill: "#58f"});
+            };
+
+
+        </script>
+    </head>
+    <body onload="initialize()">
+        <div class="row">
+            <div class="span2 offset1" id="infobar">
+                <h5 >Info!</h5>
+                <div class="btn-group btn-group-vertical">
+                    <a href="#" class="btn btn-success" data-toggle="tooltip" data-placement="right" title="" data-original-title="Willing to consider that"><i class="fui-checkmark-24"></i></a>
+                    <a href="#" class="btn btn-danger" data-toggle="tooltip" data-placement="right" title="" data-original-title="Not want to consider"><i class="fui-cross-24"></i></a>
+                    <a href="#" class="btn " data-toggle="tooltip" data-placement="right" title="" data-original-title="No longer change Value"><i class="fui-lock-24"></i></a>
+                    <a href="#" class="btn disabled" data-toggle="tooltip" data-placement="right" title="" data-original-title="Value will be changed"><i class="fui-lock-24"></i></a>
+                    <a href="#" class="btn btn-success" data-toggle="tooltip" data-placement="right" title="" data-original-title="Refresh" onclick="refresh()"><i class="fui-cmd-24"></i></a>
+                </div>
+
+            </div>
+            <div class="span10" id="holder"></div>
+            <div class="span6" >
+                <div class="span5" id="slidebars">
+                    <ul>                                    
+                        </br>
+                        <div id = "stats">
+                        </div>
+                    </ul>
+                </div>
+                </br>
+                <div class="span5" id="infobox">
+                    <div class="span4" id="within">
+                            <h1 id="infotext"></h1>
+                            <h2 id="infovalue"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

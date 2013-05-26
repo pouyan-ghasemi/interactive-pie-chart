@@ -1,0 +1,105 @@
+body {
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none
+    /* IE10 Consumer Preview */ 
+    background-image: -ms-radial-gradient(center, circle farthest-corner, #FFFFFF 0%, #CEDAEF 100%);
+
+    /* Mozilla Firefox */ 
+    background-image: -moz-radial-gradient(center, circle farthest-corner, #FFFFFF 0%, #CEDAEF 100%);
+
+    /* Opera */ 
+    background-image: -o-radial-gradient(center, circle farthest-corner, #FFFFFF 0%, #CEDAEF 100%);
+
+    /* Webkit (Safari/Chrome 10) */ 
+    background-image: -webkit-gradient(radial, center center, 0, center center, 506, color-stop(0, #FFFFFF), color-stop(1, #CEDAEF));
+
+    /* Webkit (Chrome 11+) */ 
+    background-image: -webkit-radial-gradient(center, circle farthest-corner, #FFFFFF 0%, #CEDAEF 100%);
+
+    /* W3C Markup, IE10 Release Preview */ 
+    background-image: radial-gradient(circle farthest-corner at center, #FFFFFF 0%, #CEDAEF 100%);
+ 
+    
+    margin-top: 50px;
+}
+
+#holder {
+    height: 700px;
+    width: 740px;
+    background-color: #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.25), 0 0 50px rgba(0,0,0,0.1) inset;
+    border-radius: 1%     1%     1%     1% /     1%     1%     1%     1%;
+    
+    /*border-radius: 5px;*/
+}
+#infobar {
+    background-color: #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.25), 0 0 50px rgba(0,0,0,0.1) inset;
+    border-radius: 1%     1%     1%     1% /     1%     1%     1%     1%;
+    text-align: center;
+    padding: 10px;
+}
+#slidebars {
+    background-color: #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.25), 0 0 50px rgba(0,0,0,0.1) inset;
+    border-radius: 1%     1%     1%     1% /     1%     1%     1%     1%;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+}
+#infobox {
+    margin-top : 10px;  
+    background-color: #fff;
+    font-style:bold;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.25), 0 0 50px rgba(0,0,0,0.1) inset;
+    border-radius: 1%     1%     1%     1% /     1%     1%     1%     1%;    
+    height: 300px;
+}
+#within {
+    margin-top:50px;
+    margin-left: 30px;
+    padding: 10px;
+    border-radius: 1%     1%     1%     1% /     1%     1%     1%     1%;    
+}
+#infovalue{
+    text-align: right;
+    font-size: 40px;
+    font-style: italic;
+}
+#info {
+    width : 300px;
+    border-radius: 2px;
+    height: 30px;
+    color: white;
+    margin: 4px;
+    padding: 10px;
+    opacity: 0.9;
+}
+#copy {
+    bottom: 100;
+    font: 300 .7em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
+    position: absolute;
+    right: 1em;
+    text-align: right;
+}
+
+ul li {
+    list-style-type: none;
+}
+#copy a {
+    color: #E0EEE0;
+}
+.numb{
+    font-family: Helvetica;
+    margin-left: 2px;
+    font-weight: bold;
+    font-Style:italic;
+    font-size:18px;
+}
